@@ -126,6 +126,21 @@ python -m cli.inference \
     --prompt_speech_path "path/to/prompt_audio"
 ```
 
+### Word-level semantic token cache (CPU validation)
+
+To speed up repeated text, you can cache **semantic tokens** per word segment and skip repeated LLM generation on later calls. This does **not** cache audio files; the BiCodec detokenization still runs each time.
+
+```sh
+python -m cli.cached_inference \
+  --model_dir pretrained_models/Spark-TTS-0.5B \
+  --save_dir example/results \
+  --cache_path example/token_cache/semantic_tokens.json \
+  --text "السلام عليكم ورحمة الله وبركاته" \
+  --second_text "السلام عليكم ورحمة الله وبركاته"
+```
+
+The script forces CPU execution, runs two inference calls, and logs latency and cache stats for both calls.
+
 **Web UI Usage**
 
 You can start the UI interface by running `python webui.py --device 0`, which allows you to perform Voice Cloning and Voice Creation. Voice Cloning supports uploading reference audio or directly recording the audio.
