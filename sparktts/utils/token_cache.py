@@ -35,7 +35,9 @@ class TokenCache:
     def save(self) -> None:
         if not self.cache_path:
             return
-        os.makedirs(os.path.dirname(self.cache_path), exist_ok=True)
+        cache_dir = os.path.dirname(self.cache_path)
+        if cache_dir:
+            os.makedirs(cache_dir, exist_ok=True)
         serializable = {k: asdict(v) for k, v in self._store.items()}
         with open(self.cache_path, "w", encoding="utf-8") as f:
             json.dump(serializable, f)

@@ -75,6 +75,7 @@ class SparkTTS:
     def _segment_cache_key(
         segment: str,
         prompt_text: str = None,
+        prompt_speech_path: Path = None,
         gender: str = None,
         pitch: str = None,
         speed: str = None,
@@ -83,7 +84,11 @@ class SparkTTS:
         gender = gender or ""
         pitch = pitch or ""
         speed = speed or ""
-        return f"segment={segment}|prompt_text={prompt_text}|gender={gender}|pitch={pitch}|speed={speed}"
+        prompt_speech_path = str(prompt_speech_path or "")
+        return (
+            f"segment={segment}|prompt_text={prompt_text}|prompt_speech_path={prompt_speech_path}"
+            f"|gender={gender}|pitch={pitch}|speed={speed}"
+        )
 
     def _run_llm_from_prompt(
         self,
@@ -261,6 +266,7 @@ class SparkTTS:
                 cache_key = self._segment_cache_key(
                     segment=segment,
                     prompt_text=prompt_text,
+                    prompt_speech_path=prompt_speech_path,
                     gender=gender,
                     pitch=pitch,
                     speed=speed,
@@ -270,6 +276,11 @@ class SparkTTS:
                     all_semantic_ids.extend(cached.semantic_ids)
                     if gender is not None and global_token_ids is None and cached.global_ids is not None:
                         global_token_ids = torch.tensor(cached.global_ids).long().unsqueeze(0).unsqueeze(0)
+                    if gender is None and global_token_ids is None:
+                        _, segment_global_token_ids = self.process_prompt(
+                            segment, prompt_speech_path, prompt_text
+                        )
+                        global_token_ids = segment_global_token_ids
                     self.last_inference_stats["cache_hits"] += 1
                     continue
 

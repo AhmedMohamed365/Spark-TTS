@@ -141,6 +141,12 @@ python -m cli.cached_inference \
 
 The script forces CPU execution, runs two inference calls, and logs latency and cache stats for both calls.
 
+If you want a quick validation in environments without local model weights, run the mock latency validator (it writes benchmark artifacts to `RESULTS/`):
+
+```sh
+python -m cli.validate_word_cache --results_dir RESULTS
+```
+
 **Web UI Usage**
 
 You can start the UI interface by running `python webui.py --device 0`, which allows you to perform Voice Cloning and Voice Creation. Voice Cloning supports uploading reference audio or directly recording the audio.
